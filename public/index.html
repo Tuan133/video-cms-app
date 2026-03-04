@@ -3,112 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Kanban Board</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Video CMS Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f4f5f7; margin: 0; padding: 20px; color: #172b4d; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .add-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap; }
-        .add-box input, .add-box textarea, .add-box select { padding: 10px; border: 1px solid #dfe1e6; border-radius: 4px; font-family: 'Inter'; width: 100%; box-sizing: border-box; }
-        .add-box .col-half { flex: 1; min-width: 250px; }
-        .add-box textarea { resize: vertical; height: 85px; }
-        button { background-color: #0052cc; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: 600; transition: 0.2s; }
-        button:hover { background-color: #0047b3; }
+        body { font-family: 'Inter', sans-serif; background: #e9ecef; margin: 0; padding: 20px; color: #343a40; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h2 { font-size: 28px; color: #212529; margin: 0; }
+        
+        /* FORM ĐẸP HƠN */
+        .add-box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 30px; display: flex; gap: 20px; flex-wrap: wrap; border-top: 4px solid #4361ee; }
+        .add-box input, .add-box textarea, .add-box select { padding: 12px; border: 1px solid #ced4da; border-radius: 6px; font-family: 'Inter'; width: 100%; box-sizing: border-box; background: #f8f9fa; transition: 0.3s; }
+        .add-box input:focus, .add-box textarea:focus { border-color: #4361ee; outline: none; background: white; }
+        .col-half { flex: 1; min-width: 250px; }
+        .add-box textarea { height: 105px; resize: none; }
+        
+        button { background-color: #4361ee; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; font-size: 15px; }
+        button:hover { background-color: #3f37c9; transform: translateY(-1px); }
+        .btn-cancel { background-color: #e63946; display: none; margin-right: 10px; }
+        .btn-cancel:hover { background-color: #d62828; }
 
         /* KANBAN BOARD */
-        .board { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 10px; }
-        .column { flex: 1; min-width: 280px; background-color: #ebecf0; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; }
-        .col-header { font-weight: 600; margin-bottom: 15px; padding-left: 5px; color: #5e6c84; display: flex; justify-content: space-between; }
-        .task-list { min-height: 200px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        .board { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; }
+        .column { flex: 1; min-width: 300px; background-color: #f1f3f5; border-radius: 10px; padding: 15px; display: flex; flex-direction: column; }
+        .col-header { font-weight: 700; font-size: 15px; margin-bottom: 15px; padding-bottom: 10px; color: #495057; border-bottom: 2px solid #dee2e6; }
+        .task-list { min-height: 300px; flex: 1; display: flex; flex-direction: column; gap: 12px; }
         
-        /* TASK CARD */
-        .card { background-color: white; border-radius: 6px; padding: 10px; box-shadow: 0 1px 2px rgba(9,30,66,0.25); cursor: grab; transition: transform 0.1s; }
+        /* CARD XỊN XÒ */
+        .card { background-color: white; border-radius: 8px; padding: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.04); border: 1px solid #e9ecef; cursor: grab; transition: all 0.2s ease; position: relative; }
+        .card:hover { box-shadow: 0 6px 12px rgba(0,0,0,0.1); transform: translateY(-3px); border-color: #4361ee; }
         .card:active { cursor: grabbing; transform: scale(0.98); }
-        .card img { width: 100%; height: 140px; object-fit: cover; border-radius: 4px; margin-bottom: 8px; }
-        .card-title { font-weight: 600; font-size: 15px; margin-bottom: 5px; }
-        .card-platform { font-size: 12px; font-weight: 600; padding: 3px 6px; border-radius: 3px; display: inline-block; margin-bottom: 8px; }
-        .plat-youtube { background: #ff000020; color: #ff0000; }
-        .plat-tiktok { background: #00000020; color: #000000; }
-        .card-script { font-size: 13px; color: #5e6c84; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; margin-bottom: 10px; }
+        .card-title { font-weight: 600; font-size: 15px; margin-bottom: 8px; line-height: 1.4; padding-right: 50px;}
+        .card-platform { font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .plat-youtube { background: #ffe3e3; color: #e63946; }
+        .plat-tiktok { background: #e9ecef; color: #212529; }
+        .card-script { font-size: 13px; color: #6c757d; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; background: #f8f9fa; padding: 8px; border-radius: 4px; }
+        
+        /* NÚT SỬA XÓA */
+        .card-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 5px; opacity: 0; transition: 0.2s; }
+        .card:hover .card-actions { opacity: 1; }
+        .btn-icon { background: rgba(255,255,255,0.9); border: 1px solid #dee2e6; border-radius: 4px; padding: 5px; cursor: pointer; font-size: 12px; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .btn-icon:hover { background: #f8f9fa; transform: scale(1.1); }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h2>🎬 Quản Lý Sản Xuất Video</h2>
+    <h2>🚀 Bảng Quản Lý Sản Xuất Video</h2>
 </div>
 
 <div class="add-box">
     <div class="col-half">
-        <input type="text" id="vTitle" placeholder="Tiêu đề video (Ví dụ: Đánh giá chi tiết Senku trong Dr. Stone...)" style="margin-bottom: 10px;">
-        <select id="vPlatform" style="margin-bottom: 10px;">
-            <option value="YouTube">YouTube</option>
-            <option value="TikTok">TikTok</option>
-        </select>
-        <input type="file" id="vThumb" accept="image/*">
+        <input type="text" id="vTitle" placeholder="✏️ Nhập tiêu đề video..." style="margin-bottom: 15px;">
+        <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+            <select id="vPlatform" style="flex: 1;">
+                <option value="YouTube">YouTube</option>
+                <option value="TikTok">TikTok</option>
+            </select>
+            <input type="file" id="vThumb" accept="image/*" style="flex: 2; padding: 9px;">
+        </div>
     </div>
     <div class="col-half">
-        <textarea id="vScript" placeholder="Ghi chú kịch bản..."></textarea>
+        <textarea id="vScript" placeholder="📝 Ghi chú kịch bản hoặc ý tưởng của bạn vào đây..."></textarea>
     </div>
-    <div style="width: 100%; text-align: right;">
-        <button onclick="uploadTask()" id="btnSubmit">Thêm vào bảng</button>
+    <div style="width: 100%; text-align: right; margin-top: 10px;">
+        <button onclick="cancelEdit()" class="btn-cancel" id="btnCancel">Hủy Sửa</button>
+        <button onclick="submitTask()" id="btnSubmit">✨ Thêm Mới Vào Bảng</button>
     </div>
 </div>
 
 <div class="board">
     <div class="column" ondrop="drop(event, 'Ý tưởng')" ondragover="allowDrop(event)">
-        <div class="col-header">💡 Lên ý tưởng</div>
+        <div class="col-header">💡 Đang Lên Ý Tưởng</div>
         <div class="task-list" id="col-ytuong"></div>
     </div>
-    
     <div class="column" ondrop="drop(event, 'Kịch bản')" ondragover="allowDrop(event)">
-        <div class="col-header">📝 Đang viết kịch bản</div>
+        <div class="col-header">📝 Đang Viết Kịch Bản</div>
         <div class="task-list" id="col-kichban"></div>
     </div>
-    
     <div class="column" ondrop="drop(event, 'Edit')" ondragover="allowDrop(event)">
-        <div class="col-header">✂️ Đang Edit</div>
+        <div class="col-header">✂️ Đang Dựng Video</div>
         <div class="task-list" id="col-edit"></div>
     </div>
-    
     <div class="column" ondrop="drop(event, 'Đã đăng')" ondragover="allowDrop(event)">
-        <div class="col-header">✅ Đã Upload</div>
+        <div class="col-header">✅ Đã Đăng Tải</div>
         <div class="task-list" id="col-dadang"></div>
     </div>
 </div>
 
 <script>
-    const API_URL = 'http://localhost:3000/api/videos';
+    const API_URL = '/api/videos'; // Dùng đường dẫn tương đối để chạy tốt trên Render
+    let editingId = null; // Biến lưu ID khi đang sửa
 
-    // 1. Lấy và hiển thị dữ liệu lên Kanban
+    // 1. Tải bảng
     async function loadBoard() {
         const res = await fetch(API_URL);
         const videos = await res.json();
         
-        // Xóa trắng các cột trước khi render lại
-        document.getElementById('col-ytuong').innerHTML = '';
-        document.getElementById('col-kichban').innerHTML = '';
-        document.getElementById('col-edit').innerHTML = '';
-        document.getElementById('col-dadang').innerHTML = '';
+        ['col-ytuong', 'col-kichban', 'col-edit', 'col-dadang'].forEach(id => document.getElementById(id).innerHTML = '');
 
         videos.forEach(v => {
             const card = document.createElement('div');
             card.className = 'card';
             card.draggable = true;
-            card.dataset.id = v.id; // Lưu ID để kéo thả
+            card.dataset.id = v.id;
             card.ondragstart = drag;
 
             const platClass = v.platform === 'YouTube' ? 'plat-youtube' : 'plat-tiktok';
             const imgHtml = v.thumbnailUrl ? `<img src="${v.thumbnailUrl}" alt="Thumb">` : '';
+            
+            // Xử lý chuỗi an toàn khi truyền vào hàm
+            const safeTitle = v.title.replace(/'/g, "\\'");
+            const safeScript = (v.script || '').replace(/'/g, "\\'");
 
             card.innerHTML = `
                 ${imgHtml}
+                <div class="card-actions">
+                    <button class="btn-icon" onclick="startEdit('${v.id}', '${safeTitle}', '${v.platform}', '${safeScript}')" title="Sửa">✏️</button>
+                    <button class="btn-icon" onclick="deleteTask('${v.id}')" title="Xóa">🗑️</button>
+                </div>
                 <div class="card-platform ${platClass}">${v.platform}</div>
                 <div class="card-title">${v.title}</div>
-                <div class="card-script">${v.script || 'Chưa có kịch bản...'}</div>
+                <div class="card-script">${v.script || '<i>Chưa có nội dung kịch bản...</i>'}</div>
             `;
 
-            // Đưa thẻ vào đúng cột dựa trên status
             if(v.status === 'Ý tưởng') document.getElementById('col-ytuong').appendChild(card);
             else if(v.status === 'Kịch bản') document.getElementById('col-kichban').appendChild(card);
             else if(v.status === 'Edit') document.getElementById('col-edit').appendChild(card);
@@ -116,63 +134,84 @@
         });
     }
 
-    // 2. Hàm Thêm mới (Gửi Form Data chứa file ảnh)
-    async function uploadTask() {
+    // 2. Thêm mới / Cập nhật
+    async function submitTask() {
         const title = document.getElementById('vTitle').value;
         const platform = document.getElementById('vPlatform').value;
         const script = document.getElementById('vScript').value;
         const fileInput = document.getElementById('vThumb');
         const btn = document.getElementById('btnSubmit');
 
-        if(!title) return alert("Vui lòng nhập tiêu đề!");
+        if(!title) return alert("Vui lòng nhập tiêu đề video!");
         
-        btn.innerText = "Đang tải lên...";
+        btn.innerText = "⏳ Đang xử lý...";
         btn.disabled = true;
 
         const formData = new FormData();
         formData.append('title', title);
         formData.append('platform', platform);
         formData.append('script', script);
-        if (fileInput.files[0]) {
-            formData.append('thumbnail', fileInput.files[0]);
+        if (fileInput.files[0]) formData.append('thumbnail', fileInput.files[0]);
+
+        if (editingId) {
+            // Đang ở chế độ SỬA
+            await fetch(`${API_URL}/${editingId}/details`, { method: 'PUT', body: formData });
+            cancelEdit(); // Reset form sau khi sửa
+        } else {
+            // Đang ở chế độ THÊM MỚI
+            await fetch(API_URL, { method: 'POST', body: formData });
+            document.getElementById('vTitle').value = '';
+            document.getElementById('vScript').value = '';
+            fileInput.value = '';
         }
 
-        await fetch(API_URL, {
-            method: 'POST',
-            body: formData // Không dùng JSON.stringify vì có chứa file
-        });
-
-        // Reset form
-        document.getElementById('vTitle').value = '';
-        document.getElementById('vScript').value = '';
-        fileInput.value = '';
-        btn.innerText = "Thêm vào bảng";
+        btn.innerText = "✨ Thêm Mới Vào Bảng";
         btn.disabled = false;
-        
         loadBoard();
     }
 
-    // 3. Các hàm xử lý Kéo Thả (Drag & Drop)
-    function allowDrop(ev) {
-        ev.preventDefault(); // Cần thiết để cho phép thả thẻ vào
+    // 3. Chuẩn bị dữ liệu để SỬA
+    function startEdit(id, title, platform, script) {
+        editingId = id;
+        document.getElementById('vTitle').value = title;
+        document.getElementById('vPlatform').value = platform;
+        document.getElementById('vScript').value = script;
+        
+        document.getElementById('btnSubmit').innerText = "💾 Cập Nhật Video";
+        document.getElementById('btnSubmit').style.backgroundColor = "#fb8500";
+        document.getElementById('btnCancel').style.display = "inline-block";
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Cuộn màn hình lên đầu
     }
 
-    function drag(ev) {
-        // Lưu ID của thẻ đang được cầm lên
-        ev.dataTransfer.setData("videoId", ev.target.dataset.id);
+    // 4. Hủy chế độ Sửa
+    function cancelEdit() {
+        editingId = null;
+        document.getElementById('vTitle').value = '';
+        document.getElementById('vScript').value = '';
+        document.getElementById('vThumb').value = '';
+        
+        document.getElementById('btnSubmit').innerText = "✨ Thêm Mới Vào Bảng";
+        document.getElementById('btnSubmit').style.backgroundColor = "#4361ee";
+        document.getElementById('btnCancel').style.display = "none";
     }
 
+    // 5. Hàm XÓA
+    async function deleteTask(id) {
+        if(confirm("⚠️ Bạn có chắc chắn muốn xóa video này không? Thao tác không thể hoàn tác!")) {
+            await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+            loadBoard();
+        }
+    }
+
+    // 6. Kéo thả (Giữ nguyên)
+    function allowDrop(ev) { ev.preventDefault(); }
+    function drag(ev) { ev.dataTransfer.setData("videoId", ev.target.dataset.id); }
     async function drop(ev, newStatus) {
         ev.preventDefault();
         const videoId = ev.dataTransfer.getData("videoId");
-        
-        // Cập nhật giao diện ngay lập tức cho mượt
         const cardElement = document.querySelector(`[data-id="${videoId}"]`);
-        // Tìm cột tương ứng để nhét thẻ vào
         const targetList = ev.target.closest('.column').querySelector('.task-list');
         targetList.appendChild(cardElement);
-
-        // Gọi API ngầm báo cho Backend biết đã chuyển cột
         await fetch(`${API_URL}/${videoId}/status`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -180,7 +219,6 @@
         });
     }
 
-    // Chạy lần đầu
     loadBoard();
 </script>
 
