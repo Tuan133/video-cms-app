@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Kanban Board</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f4f5f7; margin: 0; padding: 20px; color: #172b4d; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .add-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; gap: 15px; flex-wrap: wrap; }
+        .add-box input, .add-box textarea, .add-box select { padding: 10px; border: 1px solid #dfe1e6; border-radius: 4px; font-family: 'Inter'; width: 100%; box-sizing: border-box; }
+        .add-box .col-half { flex: 1; min-width: 250px; }
+        .add-box textarea { resize: vertical; height: 85px; }
+        button { background-color: #0052cc; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        button:hover { background-color: #0047b3; }
+
+        /* KANBAN BOARD */
+        .board { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 10px; }
+        .column { flex: 1; min-width: 280px; background-color: #ebecf0; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; }
+        .col-header { font-weight: 600; margin-bottom: 15px; padding-left: 5px; color: #5e6c84; display: flex; justify-content: space-between; }
+        .task-list { min-height: 200px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+        
+        /* TASK CARD */
+        .card { background-color: white; border-radius: 6px; padding: 10px; box-shadow: 0 1px 2px rgba(9,30,66,0.25); cursor: grab; transition: transform 0.1s; }
+        .card:active { cursor: grabbing; transform: scale(0.98); }
+        .card img { width: 100%; height: 140px; object-fit: cover; border-radius: 4px; margin-bottom: 8px; }
+        .card-title { font-weight: 600; font-size: 15px; margin-bottom: 5px; }
+        .card-platform { font-size: 12px; font-weight: 600; padding: 3px 6px; border-radius: 3px; display: inline-block; margin-bottom: 8px; }
+        .plat-youtube { background: #ff000020; color: #ff0000; }
+        .plat-tiktok { background: #00000020; color: #000000; }
+        .card-script { font-size: 13px; color: #5e6c84; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h2>🎬 Quản Lý Sản Xuất Video</h2>
+</div>
+
+<div class="add-box">
+    <div class="col-half">
+        <input type="text" id="vTitle" placeholder="Tiêu đề video (Ví dụ: Đánh giá chi tiết Senku trong Dr. Stone...)" style="margin-bottom: 10px;">
+        <select id="vPlatform" style="margin-bottom: 10px;">
+            <option value="YouTube">YouTube</option>
+            <option value="TikTok">TikTok</option>
+        </select>
+        <input type="file" id="vThumb" accept="image/*">
+    </div>
+    <div class="col-half">
+        <textarea id="vScript" placeholder="Ghi chú kịch bản..."></textarea>
+    </div>
+    <div style="width: 100%; text-align: right;">
+        <button onclick="uploadTask()" id="btnSubmit">Thêm vào bảng</button>
+    </div>
+</div>
+
+<div class="board">
+    <div class="column" ondrop="drop(event, 'Ý tưởng')" ondragover="allowDrop(event)">
+        <div class="col-header">💡 Lên ý tưởng</div>
+        <div class="task-list" id="col-ytuong"></div>
+    </div>
+    
+    <div class="column" ondrop="drop(event, 'Kịch bản')" ondragover="allowDrop(event)">
+        <div class="col-header">📝 Đang viết kịch bản</div>
+        <div class="task-list" id="col-kichban"></div>
+    </div>
+    
+    <div class="column" ondrop="drop(event, 'Edit')" ondragover="allowDrop(event)">
+        <div class="col-header">✂️ Đang Edit</div>
+        <div class="task-list" id="col-edit"></div>
+    </div>
+    
+    <div class="column" ondrop="drop(event, 'Đã đăng')" ondragover="allowDrop(event)">
+        <div class="col-header">✅ Đã Upload</div>
+        <div class="task-list" id="col-dadang"></div>
+    </div>
+</div>
+
+<script>
+    const API_URL = 'http://localhost:3000/api/videos';
+
+    // 1. Lấy và hiển thị dữ liệu lên Kanban
+    async function loadBoard() {
+        const res = await fetch(API_URL);
+        const videos = await res.json();
+        
+        // Xóa trắng các cột trước khi render lại
+        document.getElementById('col-ytuong').innerHTML = '';
+        document.getElementById('col-kichban').innerHTML = '';
+        document.getElementById('col-edit').innerHTML = '';
+        document.getElementById('col-dadang').innerHTML = '';
+
+        videos.forEach(v => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.draggable = true;
+            card.dataset.id = v.id; // Lưu ID để kéo thả
+            card.ondragstart = drag;
+
+            const platClass = v.platform === 'YouTube' ? 'plat-youtube' : 'plat-tiktok';
+            const imgHtml = v.thumbnailUrl ? `<img src="${v.thumbnailUrl}" alt="Thumb">` : '';
+
+            card.innerHTML = `
+                ${imgHtml}
+                <div class="card-platform ${platClass}">${v.platform}</div>
+                <div class="card-title">${v.title}</div>
+                <div class="card-script">${v.script || 'Chưa có kịch bản...'}</div>
+            `;
+
+            // Đưa thẻ vào đúng cột dựa trên status
+            if(v.status === 'Ý tưởng') document.getElementById('col-ytuong').appendChild(card);
+            else if(v.status === 'Kịch bản') document.getElementById('col-kichban').appendChild(card);
+            else if(v.status === 'Edit') document.getElementById('col-edit').appendChild(card);
+            else if(v.status === 'Đã đăng') document.getElementById('col-dadang').appendChild(card);
+        });
+    }
+
+    // 2. Hàm Thêm mới (Gửi Form Data chứa file ảnh)
+    async function uploadTask() {
+        const title = document.getElementById('vTitle').value;
+        const platform = document.getElementById('vPlatform').value;
+        const script = document.getElementById('vScript').value;
+        const fileInput = document.getElementById('vThumb');
+        const btn = document.getElementById('btnSubmit');
+
+        if(!title) return alert("Vui lòng nhập tiêu đề!");
+        
+        btn.innerText = "Đang tải lên...";
+        btn.disabled = true;
+
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('platform', platform);
+        formData.append('script', script);
+        if (fileInput.files[0]) {
+            formData.append('thumbnail', fileInput.files[0]);
+        }
+
+        await fetch(API_URL, {
+            method: 'POST',
+            body: formData // Không dùng JSON.stringify vì có chứa file
+        });
+
+        // Reset form
+        document.getElementById('vTitle').value = '';
+        document.getElementById('vScript').value = '';
+        fileInput.value = '';
+        btn.innerText = "Thêm vào bảng";
+        btn.disabled = false;
+        
+        loadBoard();
+    }
+
+    // 3. Các hàm xử lý Kéo Thả (Drag & Drop)
+    function allowDrop(ev) {
+        ev.preventDefault(); // Cần thiết để cho phép thả thẻ vào
+    }
+
+    function drag(ev) {
+        // Lưu ID của thẻ đang được cầm lên
+        ev.dataTransfer.setData("videoId", ev.target.dataset.id);
+    }
+
+    async function drop(ev, newStatus) {
+        ev.preventDefault();
+        const videoId = ev.dataTransfer.getData("videoId");
+        
+        // Cập nhật giao diện ngay lập tức cho mượt
+        const cardElement = document.querySelector(`[data-id="${videoId}"]`);
+        // Tìm cột tương ứng để nhét thẻ vào
+        const targetList = ev.target.closest('.column').querySelector('.task-list');
+        targetList.appendChild(cardElement);
+
+        // Gọi API ngầm báo cho Backend biết đã chuyển cột
+        await fetch(`${API_URL}/${videoId}/status`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus })
+        });
+    }
+
+    // Chạy lần đầu
+    loadBoard();
+</script>
+
+</body>
+</html>
