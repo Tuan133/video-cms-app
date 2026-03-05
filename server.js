@@ -2,9 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const admin = require('firebase-admin');
-const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
 
 const app = express();
 app.use(cors());
@@ -22,20 +20,6 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 const videosCollection = db.collection('videos');
 
-// Cấu hình Multer (Lưu ảnh local)
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const dir = './public/uploads';
-    if (!fs.existsSync(dir)){ fs.mkdirSync(dir, { recursive: true }); }
-    cb(null, dir);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + '-' + file.originalname);
-  }
-});
-const upload = multer({ storage: storage });
-
 // API 1: Lấy danh sách video
 app.get('/api/videos', async (req, res) => {
   try {
@@ -45,14 +29,13 @@ app.get('/api/videos', async (req, res) => {
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
-// API 2: Thêm video mới
-app.post('/api/videos', upload.single('thumbnail'), async (req, res) => {
+// API 2: Thêm video mới (Không có ảnh)
+app.post('/api/videos', async (req, res) => {
   try {
     const { title, platform, script } = req.body;
-    let thumbnailUrl = req.file ? `/uploads/${req.file.filename}` : '';
     
     const newVideo = {
-      title, platform, script: script || '', thumbnailUrl,
+      title, platform, script: script || '',
       status: 'Ý tưởng',
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     };
@@ -70,8 +53,6 @@ app.put('/api/videos/:id/status', async (req, res) => {
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
-// ================= TÍNH NĂNG MỚI =================
-
 // API 4: Xóa video
 app.delete('/api/videos/:id', async (req, res) => {
   try {
@@ -80,16 +61,11 @@ app.delete('/api/videos/:id', async (req, res) => {
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
-// API 5: Sửa nội dung video (Tiêu đề, kịch bản, ảnh)
-app.put('/api/videos/:id/details', upload.single('thumbnail'), async (req, res) => {
+// API 5: Sửa nội dung video (Không có ảnh)
+app.put('/api/videos/:id/details', async (req, res) => {
     try {
       const { title, platform, script } = req.body;
       const updateData = { title, platform, script: script || '' };
-      
-      // Nếu có tải ảnh mới lên thì cập nhật ảnh, không thì giữ nguyên ảnh cũ
-      if (req.file) {
-        updateData.thumbnailUrl = `/uploads/${req.file.filename}`;
-      }
       
       await videosCollection.doc(req.params.id).update(updateData);
       res.status(200).json({ message: 'Cập nhật thành công' });

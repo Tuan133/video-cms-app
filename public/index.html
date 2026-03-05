@@ -10,7 +10,7 @@
         .header { text-align: center; margin-bottom: 30px; }
         .header h2 { font-size: 28px; color: #212529; margin: 0; }
         
-        /* FORM ĐẸP HƠN */
+        /* FORM THÊM MỚI (Thu gọn lại) */
         .add-box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 30px; display: flex; gap: 20px; flex-wrap: wrap; border-top: 4px solid #4361ee; }
         .add-box input, .add-box textarea, .add-box select { padding: 12px; border: 1px solid #ced4da; border-radius: 6px; font-family: 'Inter'; width: 100%; box-sizing: border-box; background: #f8f9fa; transition: 0.3s; }
         .add-box input:focus, .add-box textarea:focus { border-color: #4361ee; outline: none; background: white; }
@@ -19,8 +19,6 @@
         
         button { background-color: #4361ee; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; font-size: 15px; }
         button:hover { background-color: #3f37c9; transform: translateY(-1px); }
-        .btn-cancel { background-color: #e63946; display: none; margin-right: 10px; }
-        .btn-cancel:hover { background-color: #d62828; }
 
         /* KANBAN BOARD */
         .board { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px; }
@@ -28,22 +26,35 @@
         .col-header { font-weight: 700; font-size: 15px; margin-bottom: 15px; padding-bottom: 10px; color: #495057; border-bottom: 2px solid #dee2e6; }
         .task-list { min-height: 300px; flex: 1; display: flex; flex-direction: column; gap: 12px; }
         
-        /* CARD XỊN XÒ */
-        .card { background-color: white; border-radius: 8px; padding: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.04); border: 1px solid #e9ecef; cursor: grab; transition: all 0.2s ease; position: relative; }
+        /* CARD (Thẻ video) */
+        .card { background-color: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.04); border: 1px solid #e9ecef; cursor: grab; transition: all 0.2s ease; position: relative; }
         .card:hover { box-shadow: 0 6px 12px rgba(0,0,0,0.1); transform: translateY(-3px); border-color: #4361ee; }
         .card:active { cursor: grabbing; transform: scale(0.98); }
-        .card img { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; margin-bottom: 10px; }
-        .card-title { font-weight: 600; font-size: 15px; margin-bottom: 8px; line-height: 1.4; padding-right: 50px;}
+        .card-content { cursor: pointer; } /* Vùng bấm để mở popup */
+        .card-title { font-weight: 600; font-size: 15px; margin-bottom: 8px; line-height: 1.4; padding-right: 30px;}
         .card-platform { font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
         .plat-youtube { background: #ffe3e3; color: #e63946; }
         .plat-tiktok { background: #e9ecef; color: #212529; }
-        .card-script { font-size: 13px; color: #6c757d; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; background: #f8f9fa; padding: 8px; border-radius: 4px; }
+        .card-script { font-size: 13px; color: #6c757d; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; background: #f8f9fa; padding: 10px; border-radius: 6px; border-left: 3px solid #ced4da;}
         
-        /* NÚT SỬA XÓA */
-        .card-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 5px; opacity: 0; transition: 0.2s; }
+        /* Nút Xóa trên Card */
+        .card-actions { position: absolute; top: 12px; right: 12px; opacity: 0; transition: 0.2s; }
         .card:hover .card-actions { opacity: 1; }
         .btn-icon { background: rgba(255,255,255,0.9); border: 1px solid #dee2e6; border-radius: 4px; padding: 5px; cursor: pointer; font-size: 12px; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .btn-icon:hover { background: #f8f9fa; transform: scale(1.1); }
+        .btn-icon:hover { background: #ffe3e3; border-color: #e63946; transform: scale(1.1); }
+
+        /* ================= CSS CHO CỬA SỔ POPUP (MODAL) ================= */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; backdrop-filter: blur(3px); }
+        .modal-content { background-color: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 550px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: fadeIn 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 24px; font-weight: bold; color: #adb5bd; cursor: pointer; transition: 0.2s; }
+        .close-btn:hover { color: #e63946; }
+        
+        .modal-content h3 { margin-top: 0; margin-bottom: 20px; color: #212529; border-bottom: 2px solid #f1f3f5; padding-bottom: 10px; }
+        .modal-content label { font-weight: 600; font-size: 13px; color: #495057; display: block; margin-bottom: 5px; }
+        .modal-content input, .modal-content select, .modal-content textarea { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ced4da; border-radius: 6px; font-family: 'Inter'; box-sizing: border-box; background: #f8f9fa; }
+        .modal-content input:focus, .modal-content textarea:focus { border-color: #fb8500; outline: none; background: white; }
+        .modal-content textarea { height: 180px; resize: vertical; }
     </style>
 </head>
 <body>
@@ -55,20 +66,16 @@
 <div class="add-box">
     <div class="col-half">
         <input type="text" id="vTitle" placeholder="✏️ Nhập tiêu đề video..." style="margin-bottom: 15px;">
-        <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-            <select id="vPlatform" style="flex: 1;">
-                <option value="YouTube">YouTube</option>
-                <option value="TikTok">TikTok</option>
-            </select>
-            <input type="file" id="vThumb" accept="image/*" style="flex: 2; padding: 9px;">
-        </div>
+        <select id="vPlatform">
+            <option value="YouTube">YouTube</option>
+            <option value="TikTok">TikTok</option>
+        </select>
     </div>
     <div class="col-half">
         <textarea id="vScript" placeholder="📝 Ghi chú kịch bản hoặc ý tưởng của bạn vào đây..."></textarea>
     </div>
     <div style="width: 100%; text-align: right; margin-top: 10px;">
-        <button onclick="cancelEdit()" class="btn-cancel" id="btnCancel">Hủy Sửa</button>
-        <button onclick="submitTask()" id="btnSubmit">✨ Thêm Mới Vào Bảng</button>
+        <button onclick="submitNewTask()" id="btnSubmit">✨ Thêm Mới Vào Bảng</button>
     </div>
 </div>
 
@@ -91,9 +98,32 @@
     </div>
 </div>
 
+<div id="videoModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()" title="Đóng">&times;</span>
+        <h3>Xem & Chỉnh Sửa Chi Tiết</h3>
+        
+        <input type="hidden" id="mId"> <label>Tiêu đề Video</label>
+        <input type="text" id="mTitle">
+        
+        <label>Nền tảng đăng tải</label>
+        <select id="mPlatform">
+            <option value="YouTube">YouTube</option>
+            <option value="TikTok">TikTok</option>
+        </select>
+        
+        <label>Nội dung kịch bản</label>
+        <textarea id="mScript"></textarea>
+        
+        <div style="text-align: right;">
+            <button onclick="closeModal()" style="background: #e9ecef; color: #495057; margin-right: 10px;">Đóng</button>
+            <button onclick="saveModalChanges()" id="btnSave" style="background: #fb8500;">💾 Lưu Thay Đổi</button>
+        </div>
+    </div>
+</div>
+
 <script>
-    const API_URL = '/api/videos'; // Dùng đường dẫn tương đối để chạy tốt trên Render
-    let editingId = null; // Biến lưu ID khi đang sửa
+    const API_URL = '/api/videos';
 
     // 1. Tải bảng
     async function loadBoard() {
@@ -110,21 +140,18 @@
             card.ondragstart = drag;
 
             const platClass = v.platform === 'YouTube' ? 'plat-youtube' : 'plat-tiktok';
-            const imgHtml = v.thumbnailUrl ? `<img src="${v.thumbnailUrl}" alt="Thumb">` : '';
-            
-            // Xử lý chuỗi an toàn khi truyền vào hàm
-            const safeTitle = v.title.replace(/'/g, "\\'");
-            const safeScript = (v.script || '').replace(/'/g, "\\'");
+            const safeTitle = v.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            const safeScript = (v.script || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
             card.innerHTML = `
-                ${imgHtml}
                 <div class="card-actions">
-                    <button class="btn-icon" onclick="startEdit('${v.id}', '${safeTitle}', '${v.platform}', '${safeScript}')" title="Sửa">✏️</button>
-                    <button class="btn-icon" onclick="deleteTask('${v.id}')" title="Xóa">🗑️</button>
+                    <button class="btn-icon" onclick="deleteTask(event, '${v.id}')" title="Xóa">🗑️</button>
                 </div>
-                <div class="card-platform ${platClass}">${v.platform}</div>
-                <div class="card-title">${v.title}</div>
-                <div class="card-script">${v.script || '<i>Chưa có nội dung kịch bản...</i>'}</div>
+                <div class="card-content" onclick="openModal('${v.id}', '${safeTitle}', '${v.platform}', '${safeScript}')">
+                    <div class="card-platform ${platClass}">${v.platform}</div>
+                    <div class="card-title">${v.title}</div>
+                    <div class="card-script">${v.script || '<i>Chưa có nội dung kịch bản...</i>'}</div>
+                </div>
             `;
 
             if(v.status === 'Ý tưởng') document.getElementById('col-ytuong').appendChild(card);
@@ -134,84 +161,99 @@
         });
     }
 
-    // 2. Thêm mới / Cập nhật
-    async function submitTask() {
+    // 2. Thêm mới (Chỉ dùng cho Form bên trên)
+    async function submitNewTask() {
         const title = document.getElementById('vTitle').value;
         const platform = document.getElementById('vPlatform').value;
         const script = document.getElementById('vScript').value;
-        const fileInput = document.getElementById('vThumb');
         const btn = document.getElementById('btnSubmit');
 
         if(!title) return alert("Vui lòng nhập tiêu đề video!");
         
-        btn.innerText = "⏳ Đang xử lý...";
-        btn.disabled = true;
+        btn.innerText = "⏳ Đang xử lý..."; btn.disabled = true;
 
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('platform', platform);
-        formData.append('script', script);
-        if (fileInput.files[0]) formData.append('thumbnail', fileInput.files[0]);
+        await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, platform, script })
+        });
 
-        if (editingId) {
-            // Đang ở chế độ SỬA
-            await fetch(`${API_URL}/${editingId}/details`, { method: 'PUT', body: formData });
-            cancelEdit(); // Reset form sau khi sửa
-        } else {
-            // Đang ở chế độ THÊM MỚI
-            await fetch(API_URL, { method: 'POST', body: formData });
-            document.getElementById('vTitle').value = '';
-            document.getElementById('vScript').value = '';
-            fileInput.value = '';
-        }
-
-        btn.innerText = "✨ Thêm Mới Vào Bảng";
-        btn.disabled = false;
+        document.getElementById('vTitle').value = '';
+        document.getElementById('vScript').value = '';
+        btn.innerText = "✨ Thêm Mới Vào Bảng"; btn.disabled = false;
         loadBoard();
     }
 
-    // 3. Chuẩn bị dữ liệu để SỬA
-    function startEdit(id, title, platform, script) {
-        editingId = id;
-        document.getElementById('vTitle').value = title;
-        document.getElementById('vPlatform').value = platform;
-        document.getElementById('vScript').value = script;
-        
-        document.getElementById('btnSubmit').innerText = "💾 Cập Nhật Video";
-        document.getElementById('btnSubmit').style.backgroundColor = "#fb8500";
-        document.getElementById('btnCancel').style.display = "inline-block";
-        window.scrollTo({ top: 0, behavior: 'smooth' }); // Cuộn màn hình lên đầu
-    }
-
-    // 4. Hủy chế độ Sửa
-    function cancelEdit() {
-        editingId = null;
-        document.getElementById('vTitle').value = '';
-        document.getElementById('vScript').value = '';
-        document.getElementById('vThumb').value = '';
-        
-        document.getElementById('btnSubmit').innerText = "✨ Thêm Mới Vào Bảng";
-        document.getElementById('btnSubmit').style.backgroundColor = "#4361ee";
-        document.getElementById('btnCancel').style.display = "none";
-    }
-
-    // 5. Hàm XÓA
-    async function deleteTask(id) {
-        if(confirm("⚠️ Bạn có chắc chắn muốn xóa video này không? Thao tác không thể hoàn tác!")) {
+    // 3. Xóa Video (Thêm ev.stopPropagation() để không mở popup khi bấm xóa)
+    async function deleteTask(ev, id) {
+        ev.stopPropagation(); 
+        if(confirm("⚠️ Bạn có chắc chắn muốn xóa video này không?")) {
             await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
             loadBoard();
         }
     }
 
-    // 6. Kéo thả (Giữ nguyên)
+    // ================= LOGIC CHO POPUP (MODAL) =================
+    
+    // Mở Modal và điền sẵn dữ liệu cũ
+    function openModal(id, title, platform, script) {
+        document.getElementById('mId').value = id;
+        document.getElementById('mTitle').value = title;
+        document.getElementById('mPlatform').value = platform;
+        document.getElementById('mScript').value = script;
+        
+        // Hiển thị modal (chuyển display từ none sang flex)
+        document.getElementById('videoModal').style.display = 'flex';
+    }
+
+    // Đóng Modal (Nút X)
+    function closeModal() {
+        document.getElementById('videoModal').style.display = 'none';
+    }
+
+    // Bấm ra ngoài vùng trắng cũng sẽ đóng Modal
+    window.onclick = function(event) {
+        const modal = document.getElementById('videoModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    }
+
+    // Lưu thay đổi từ Modal lên Database
+    async function saveModalChanges() {
+        const id = document.getElementById('mId').value;
+        const title = document.getElementById('mTitle').value;
+        const platform = document.getElementById('mPlatform').value;
+        const script = document.getElementById('mScript').value;
+        const btn = document.getElementById('btnSave');
+
+        if(!title) return alert("Tiêu đề không được để trống!");
+        
+        btn.innerText = "⏳ Đang lưu..."; btn.disabled = true;
+
+        await fetch(`${API_URL}/${id}/details`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, platform, script })
+        });
+
+        btn.innerText = "💾 Lưu Thay Đổi"; btn.disabled = false;
+        closeModal(); // Lưu xong thì tắt popup
+        loadBoard();  // Tải lại bảng để thấy nội dung mới
+    }
+
+    // ================= KÉO THẢ (Giữ nguyên) =================
     function allowDrop(ev) { ev.preventDefault(); }
-    function drag(ev) { ev.dataTransfer.setData("videoId", ev.target.dataset.id); }
+    function drag(ev) { ev.dataTransfer.setData("videoId", ev.target.closest('.card').dataset.id); }
     async function drop(ev, newStatus) {
         ev.preventDefault();
         const videoId = ev.dataTransfer.getData("videoId");
+        if (!videoId) return;
+        
         const cardElement = document.querySelector(`[data-id="${videoId}"]`);
         const targetList = ev.target.closest('.column').querySelector('.task-list');
         targetList.appendChild(cardElement);
+        
         await fetch(`${API_URL}/${videoId}/status`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -219,6 +261,7 @@
         });
     }
 
+    // Khởi chạy khi vừa vào web
     loadBoard();
 </script>
 
